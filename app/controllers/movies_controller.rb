@@ -8,23 +8,48 @@ class MoviesController < ApplicationController
 
   def index
     sort = params[:sort]
-    @all_ratings = Movie.all_ratings
+    submit_clicked = params[:submit_clicked]
     
+    @all_ratings = Movie.all_ratings
     generatedRatings = {}
     @all_ratings.each{ |rating| generatedRatings[rating] = 1 }
     
-    ratings = params[:ratings] || generatedRatings
+    ratings = {}
+    
+    if(submit_clicked)
+      if(!params[:ratings])
+        ratings = generatedRatings
+      else
+        ratings = params[:ratings]
+      end
+      
+      session[:ratings] = ratings
+    elsif(params[:ratings]) 
+      ratings = params[:ratings]
+      
+      session[:ratings] = ratings
+    elsif(session[:ratings])
+      ratings = session[:ratings]
+    else
+      ratings = generatedRatings
+    end
+    
+    if(sort)
+      session[:sort] = sort
+    elsif session[:sort]
+      sort = session[:sort]
+    end
     
     case sort
-    when "movies_title"
-      @movies = Movie.order(:title)
-      @sort = "movies_title"
-    when "release_date"
-      @movies = Movie.order(:release_date)
-      @sort = "release_date"
-    else
-      @movies = Movie.all
-      @sort = ''
+      when "movies_title"
+        @movies = Movie.order(:title)
+        @sort = "movies_title"
+      when "release_date"
+        @movies = Movie.order(:release_date)
+        @sort = "release_date"
+      else
+        @movies = Movie.all
+        @sort = ''
     end
     
     @ratings_to_show = ratings.keys
