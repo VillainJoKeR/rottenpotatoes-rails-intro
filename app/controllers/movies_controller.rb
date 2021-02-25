@@ -19,11 +19,11 @@ class MoviesController < ApplicationController
     if(submit_clicked)
       if(!params[:ratings])
         ratings = generatedRatings
+        session[:ratings] = nil
       else
         ratings = params[:ratings]
+        session[:ratings] = ratings
       end
-      
-      session[:ratings] = ratings
     elsif(params[:ratings]) 
       ratings = params[:ratings]
       
@@ -32,6 +32,7 @@ class MoviesController < ApplicationController
       ratings = session[:ratings]
     else
       ratings = generatedRatings
+      session[:ratings] = nil
     end
     
     if(sort)
@@ -52,7 +53,7 @@ class MoviesController < ApplicationController
         @sort = ''
     end
     
-    @ratings_to_show = ratings.keys
+    @ratings_to_show = ratings == generatedRatings ? [] : ratings.keys
     @movies = @movies.with_ratings(ratings.keys)
   end
 
