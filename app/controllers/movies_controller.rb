@@ -7,6 +7,11 @@ class MoviesController < ApplicationController
   end
 
   def index
+    # clear session on load
+    if request.env['PATH_INFO'] == '/'
+      session.clear
+    end
+      
     sort = params[:sort]
     submit_clicked = params[:submit_clicked]
     
